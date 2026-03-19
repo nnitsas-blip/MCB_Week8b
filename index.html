@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCB Week 8b — Financial Crises in Emerging Market Economies: Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest:   #132A13;
+    --mid:      #1E4021;
+    --gold:     #C8A84B;
+    --gold-lt:  #E2CC85;
+    --cream:    #F4F7EF;
+    --cream-dk: #E8EDD8;
+    --white:    #FFFFFF;
+    --text:     #1A2A1A;
+    --muted:    #5A7A5A;
+    --correct:  #1A6B35;
+    --wrong:    #8B2020;
+    --radius:   10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+  .header {
+    background: var(--forest); padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 100;
+  }
+  .header-left { display: flex; flex-direction: column; gap: 2px; }
+  .header-label { font-size: 10px; font-weight: 600; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--white); font-weight: 600; }
+  .score-badge { background: var(--mid); border: 1.5px solid var(--gold); border-radius: 8px; padding: 8px 18px; text-align: center; }
+  .score-label { font-size: 10px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+  .score-value { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--white); line-height: 1.1; }
+
+  .progress-wrap { background: var(--forest); padding: 0 32px 14px; }
+  .progress-track { height: 4px; background: var(--mid); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.5s ease; }
+  .progress-text { font-size: 11px; color: #7A9B72; margin-top: 5px; letter-spacing: 1px; }
+
+  .nav-panel { background: var(--white); border-bottom: 1px solid var(--cream-dk); padding: 14px 32px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .nav-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-right: 6px; white-space: nowrap; }
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 6px; border: 1.5px solid var(--cream-dk);
+    background: var(--cream); font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-btn:hover { border-color: var(--gold); color: var(--forest); background: var(--cream-dk); }
+  .nav-btn.active { background: var(--forest); border-color: var(--forest); color: var(--gold); }
+  .nav-btn.answered-correct { background: var(--correct); border-color: var(--correct); color: white; }
+  .nav-btn.answered-wrong { background: var(--wrong); border-color: var(--wrong); color: white; }
+
+  .main { max-width: 820px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  .question-card { background: var(--white); border-radius: var(--radius); box-shadow: 0 2px 16px rgba(19,42,19,0.07); overflow: hidden; animation: slideIn 0.25s ease; }
+  @keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .card-top { background: var(--forest); padding: 18px 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .q-meta { display: flex; flex-direction: column; gap: 4px; }
+  .q-number { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); letter-spacing: 2px; }
+  .q-section { font-size: 11px; font-weight: 600; color: #7AAB7A; letter-spacing: 1.5px; text-transform: uppercase; }
+  .q-difficulty { font-size: 10px; letter-spacing: 1.5px; padding: 3px 10px; border-radius: 20px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+  .diff-medium { background: rgba(200,168,75,0.2); color: var(--gold-lt); border: 1px solid rgba(200,168,75,0.35); }
+  .diff-hard   { background: rgba(139,32,32,0.25); color: #E08080; border: 1px solid rgba(139,32,32,0.4); }
+  .diff-calc   { background: rgba(42,92,42,0.3); color: #90C890; border: 1px solid rgba(42,92,42,0.5); }
+
+  .card-body { padding: 28px 28px 8px; }
+  .q-text { font-family: 'Playfair Display', serif; font-size: 19px; line-height: 1.55; color: var(--text); font-weight: 600; margin-bottom: 20px; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 6px; }
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;
+    border: 1.5px solid var(--cream-dk); border-radius: 8px; background: var(--cream);
+    cursor: pointer; text-align: left; transition: all 0.15s;
+    font-family: 'Source Sans 3', sans-serif; font-size: 15px; color: var(--text); line-height: 1.45; width: 100%;
+  }
+  .option-btn:not(.revealed):hover { border-color: var(--gold); background: #F0F5E6; transform: translateX(3px); }
+  .option-letter {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;
+    min-width: 22px; height: 22px; border-radius: 4px; background: var(--cream-dk);
+    color: var(--muted); display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px; transition: all 0.15s;
+  }
+  .option-btn.correct { border-color: var(--correct); background: #E8F5E8; }
+  .option-btn.correct .option-letter { background: var(--correct); color: white; }
+  .option-btn.wrong { border-color: var(--wrong); background: #F5E8E8; }
+  .option-btn.wrong .option-letter { background: var(--wrong); color: white; }
+  .option-btn.dimmed { opacity: 0.45; }
+  .option-btn.revealed { cursor: default; }
+
+  .explanation { margin: 0 28px 24px; border-radius: 8px; padding: 16px 18px; font-size: 14px; line-height: 1.65; display: none; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  .explanation.show { display: block; }
+  .explanation.correct-exp { background: #E8F5E8; border: 1px solid #C0DFC0; color: #1A4A1A; }
+  .explanation.wrong-exp   { background: #F5E8E8; border: 1px solid #DFC0C0; color: #4A1A1A; }
+  .exp-head { font-weight: 700; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .correct-exp .exp-head { color: var(--correct); }
+  .wrong-exp .exp-head   { color: var(--wrong); }
+
+  .card-footer { padding: 14px 28px 22px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .btn { padding: 10px 22px; border-radius: 7px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-primary { background: var(--forest); color: var(--gold); border: 1.5px solid var(--gold); }
+  .btn-primary:hover { background: var(--mid); }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1.5px solid var(--cream-dk); }
+  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .nav-arrows { display: flex; gap: 8px; }
+  .btn-arrow { width: 38px; height: 38px; border-radius: 7px; border: 1.5px solid var(--cream-dk); background: var(--cream); color: var(--muted); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .btn-arrow:hover:not(:disabled) { border-color: var(--forest); color: var(--forest); }
+  .btn-arrow:disabled { opacity: 0.3; cursor: default; }
+
+  .results-panel { display: none; background: var(--white); border-radius: var(--radius); box-shadow: 0 2px 16px rgba(19,42,19,0.07); overflow: hidden; animation: slideIn 0.3s ease; }
+  .results-panel.show { display: block; }
+  .results-header { background: var(--forest); padding: 30px 32px; text-align: center; border-bottom: 3px solid var(--gold); }
+  .results-title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--white); margin-bottom: 6px; }
+  .results-subtitle { font-size: 14px; color: #7AAB7A; letter-spacing: 1px; }
+  .big-score { font-family: 'Playfair Display', serif; font-size: 72px; color: var(--gold); line-height: 1; margin: 20px 0 8px; }
+  .results-body { padding: 28px 32px; }
+  .section-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .breakdown-item { background: var(--cream); border-radius: 8px; padding: 12px 14px; border-left: 3px solid var(--gold); }
+  .breakdown-section { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px; }
+  .breakdown-score { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--forest); }
+  .btn-restart { display: block; width: 100%; padding: 14px; background: var(--forest); color: var(--gold); border: 2px solid var(--gold); border-radius: 8px; font-family: 'Playfair Display', serif; font-size: 17px; cursor: pointer; transition: all 0.15s; }
+  .btn-restart:hover { background: var(--mid); }
+
+  @media (max-width: 600px) {
+    .header { padding: 14px 16px; }
+    .nav-panel { padding: 12px 16px; }
+    .main { padding: 20px 12px 50px; }
+    .card-body { padding: 20px 18px 6px; }
+    .q-text { font-size: 17px; }
+    .card-footer { padding: 12px 18px 18px; }
+    .explanation { margin: 0 18px 18px; }
+    .section-breakdown { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <span class="header-label">Money, Credit &amp; Banking · Week 8b</span>
+    <span class="header-title">Financial Crises in Emerging Markets — Quiz</span>
+  </div>
+  <div class="score-badge">
+    <div class="score-label">Score</div>
+    <div class="score-value" id="scoreDisplay">0 / 0</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-text" id="progressText">0 of 13 answered</div>
+</div>
+
+<div class="nav-panel">
+  <span class="nav-label">Jump to</span>
+  <div id="navGrid" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+</div>
+
+<div class="main">
+  <div id="questionCard" class="question-card"></div>
+  <div id="resultsPanel" class="results-panel"></div>
+</div>
+
+<script>
+// Correct answer distribution: A A A B B B C C C D D D D  → 3×A, 3×B, 3×C, 4×D
+const QUESTIONS = [
+
+  // ── Q1  correct: A ── Section 01 · Framework ────────────────────────────
+  {
+    section: "Section 01 · The Framework", difficulty: "medium",
+    q: "Which of the following best explains why financial crises tend to be more severe in emerging market economies (EMEs) than in advanced economies experiencing similar shocks?",
+    options: [
+      "EME firms typically borrow in foreign currency but earn revenues in domestic currency, so a devaluation simultaneously destroys their net worth — a channel largely absent in advanced economies with own-currency debt",
+      "Advanced economies have larger government deficits, giving them more fiscal space to absorb shocks",
+      "EMEs have higher interest rates, which automatically stabilise the economy during a downturn",
+      "Capital markets in EMEs are more liquid, making it easier for distressed firms to raise equity"
+    ],
+    correct: 0,
+    explanation: "Currency mismatch is the critical amplification channel in EME crises. When the domestic currency depreciates, foreign-currency liabilities balloon in local-currency terms while assets remain unchanged — net worth is destroyed instantaneously. Advanced economies with own-currency debt (US, UK, eurozone members) cannot experience this mechanism in the same way. This is the core reason EME contractions tend to be deeper and more sudden."
+  },
+
+  // ── Q2  correct: D ── Section 01 · Framework ────────────────────────────
+  {
+    section: "Section 01 · The Framework", difficulty: "hard",
+    q: "In Mishkin's asymmetric information framework, 'adverse selection' in credit markets worsens during a financial crisis. Which sequence correctly describes this mechanism?",
+    options: [
+      "Banks become more profitable → they lend more → asset prices rise → the cycle reverses",
+      "Interest rates fall → safe borrowers exit the market → only risky borrowers remain → banks ration credit",
+      "Governments guarantee all loans → banks lend freely → moral hazard rises → defaults increase",
+      "Rising interest rates or balance sheet deterioration → the pool of borrowers becomes riskier on average → lenders cannot distinguish good from bad borrowers → credit is rationed, deepening the contraction"
+    ],
+    correct: 3,
+    explanation: "Adverse selection arises because lenders cannot perfectly observe borrower quality. When conditions tighten — rates rise, collateral values fall, uncertainty spikes — good borrowers (who have alternatives) exit the market. Only riskier borrowers remain. Lenders, unable to distinguish, respond by rationing credit entirely rather than raising rates further (which would just worsen the pool further). This rationing deepens the economic contraction — a classic Stiglitz-Weiss mechanism applied to crisis dynamics."
+  },
+
+  // ── Q3  correct: B ── Section 02 · Crisis Anatomy ───────────────────────
+  {
+    section: "Section 02 · Crisis Anatomy", difficulty: "hard",
+    q: "In the Mishkin three-stage model of emerging market crises, Stage 2 involves a currency crisis. Why is the central bank caught in an 'impossible dilemma' when a speculative attack begins?",
+    options: [
+      "The central bank cannot print foreign currency to meet demand, so it must borrow from the IMF immediately",
+      "Raising interest rates to defend the peg would worsen the banking crisis by increasing funding costs and borrower defaults, while not raising rates invites further speculative selling — both options accelerate the crisis",
+      "The IMF prohibits interest rate hikes during currency crises under the terms of its lending agreements",
+      "Foreign exchange reserves are always sufficient to repel speculative attacks if deployed decisively enough"
+    ],
+    correct: 1,
+    explanation: "The impossible dilemma is the defining feature of Stage 2. To defend the peg, the central bank would normally raise rates sharply — making it more attractive to hold domestic currency. But in an EME with fragile banks, higher rates push already-stressed institutions into insolvency and worsen borrower defaults. Speculators know the central bank faces this constraint and exploit it: they sell the currency knowing the bank cannot defend without triggering a banking crisis. This rational expectation makes the attack self-fulfilling."
+  },
+
+  // ── Q4  correct: A ── Section 02 · Crisis Anatomy ───────────────────────
+  {
+    section: "Section 02 · Crisis Anatomy", difficulty: "calc",
+    q: "An EME firm has assets of 500m in local currency and liabilities of USD 80m. The exchange rate is 5 local units per USD. The currency then depreciates to 9 local units per USD. What is the firm's net worth before and after the devaluation, and what does this illustrate?",
+    options: [
+      "Before: 500m − 400m = 100m; After: 500m − 720m = −220m. The firm moves from solvent to deeply insolvent purely due to currency mismatch — assets are unchanged, but liabilities surge",
+      "Before: 500m − 400m = 100m; After: 900m − 720m = 180m. The firm gains because its assets are also revalued upward",
+      "Before: 500m − 80m = 420m; After: 500m − 80m = 420m. Foreign currency liabilities are unchanged in dollar terms",
+      "Before: 100m; After: −50m. Only half the liabilities are affected because the firm can hedge via derivatives"
+    ],
+    correct: 0,
+    explanation: "Before: liabilities in local currency = USD 80m × 5 = 400m; net worth = 500m − 400m = 100m. After: liabilities = USD 80m × 9 = 720m; net worth = 500m − 720m = −220m. The firm is wiped out — not because its domestic business deteriorated, but purely because the exchange rate moved. This is the currency mismatch destruction mechanism: assets denominated in local currency are unchanged, but foreign-currency liabilities balloon. Multiplied across thousands of firms simultaneously, this is why EME devaluations trigger systemic banking crises."
+  },
+
+  // ── Q5  correct: C ── Section 03 · South Korea ──────────────────────────
+  {
+    section: "Section 03 · South Korea 1997–98", difficulty: "medium",
+    q: "South Korea's chaebols had debt/equity ratios often exceeding 500% by the mid-1990s. Why did this make the entire financial system — not just the individual firms — vulnerable?",
+    options: [
+      "High leverage meant chaebols paid more taxes, reducing government revenues available for bank recapitalisation",
+      "South Korean merchant banks refused to lend to chaebols, forcing them to borrow abroad",
+      "Chaebol leverage was financed largely by short-term foreign borrowing intermediated through South Korean banks. When foreign lenders withdrew, banks faced a sudden stop in funding — creating a banking crisis alongside the corporate crisis",
+      "Chaebols were state-owned enterprises, so their debt was counted as government debt and raised fiscal risk directly"
+    ],
+    correct: 2,
+    explanation: "The systemic danger of chaebol leverage was not merely the size of individual balance sheets — it was the funding structure. Korean merchant banks borrowed short-term in foreign currency from international lenders and on-lent to chaebols. When confidence fell (triggered by regional contagion from Thailand in mid-1997), foreign lenders refused to roll over the short-term debt. The banks suddenly had no funding. Short-term external debt stood at ~$70bn against reserves of only ~$25bn — the classic 'sudden stop'. The resulting bank funding crisis transmitted the corporate balance sheet problem into a full financial crisis."
+  },
+
+  // ── Q6  correct: D ── Section 03 · South Korea ──────────────────────────
+  {
+    section: "Section 03 · South Korea 1997–98", difficulty: "calc",
+    q: "At its peak in late 1997, the Korean won had fallen approximately 50% against the USD (from ~870 to ~1,700 won per dollar). A Korean conglomerate had USD 2bn of dollar-denominated bonds outstanding. By how much did the won-denominated value of this debt increase, and what was the approximate impact on a firm with 3 trillion won of total equity?",
+    options: [
+      "Debt increased by 1 trillion won; equity falls from 3 trillion to 2 trillion — a severe but survivable hit",
+      "Debt increased by 2 trillion won; equity is entirely wiped out and the firm is insolvent by 1 trillion won",
+      "Debt increased by 3.4 trillion won; the firm's equity is wiped out and it has negative net worth of 0.4 trillion won",
+      "Debt increased by 1.66 trillion won; equity falls from 3 trillion to 1.34 trillion won — a painful but solvent position"
+    ],
+    correct: 3,
+    explanation: "Before depreciation: USD 2bn × 870 = 1,740bn won = 1.74 trillion won of debt; net worth = 3 − 1.74 = 1.26 trillion won. After depreciation: USD 2bn × 1,700 = 3,400bn won = 3.4 trillion won of debt. Increase in won-denominated debt = 3.4 − 1.74 = 1.66 trillion won. Remaining equity = 3 − 1.66 = 1.34 trillion won. The firm survives but its equity is cut by more than half. When combined with falling revenues, rising domestic interest rates and collapsing asset prices, many real Korean firms with similar profiles did tip into insolvency — illustrating how the currency shock interacts with other crisis dynamics."
+  },
+
+  // ── Q7  correct: A ── Section 04 · Argentina ────────────────────────────
+  {
+    section: "Section 04 · Argentina 2001–02", difficulty: "hard",
+    q: "Argentina's Convertibility Law (1991) fixed the peso at 1:1 to the US dollar. This initially delivered price stability after hyperinflation. Why did the same commitment device become a fatal trap by 2001?",
+    options: [
+      "With the peg in place, Argentina had no independent monetary policy. Competitiveness could only adjust through wages and prices (internal devaluation) — an extremely slow and politically painful process. When the USD strengthened in the late 1990s and Brazil devalued in 1999, the overvalued peso crushed exports, triggering recession and fiscal deterioration that the peg could not accommodate",
+      "Argentina had violated the Convertibility Law by printing pesos without backing, undermining credibility",
+      "The IMF forced Argentina to abandon the peg prematurely, triggering a confidence crisis",
+      "Fixed exchange rates are always destabilising in emerging markets because they prevent automatic adjustment"
+    ],
+    correct: 0,
+    explanation: "The Convertibility Law was credible precisely because it was rigid — but rigidity is a double-edged sword. By 1998, three external shocks hit simultaneously: the US dollar strengthened (making the peso-linked currency overvalued), Brazil devalued its real (making Argentine exports uncompetitive), and the Russian default raised risk premia globally. Argentina's exports collapsed, the economy fell into recession, and tax revenues fell — worsening the fiscal deficit. With no monetary policy and no ability to devalue, the only adjustment mechanism was deflation and wage cuts — politically impossible to sustain. The peg that had been the anchor of stability became the cage that prevented adjustment."
+  },
+
+  // ── Q8  correct: B ── Section 04 · Argentina ────────────────────────────
+  {
+    section: "Section 04 · Argentina 2001–02", difficulty: "calc",
+    q: "Argentina's sovereign debt stood at approximately USD 145bn at the time of default in December 2001. The eventual debt restructuring (2005) offered creditors approximately 30 cents on the dollar. What was the approximate haircut in dollar terms, and how did this compare to the largest previous sovereign default on record?",
+    options: [
+      "Haircut of USD 58bn (40%); comparable to Russia 1998",
+      "Haircut of approximately USD 101.5bn (70%); this was the largest sovereign default in history at the time, exceeding the previous record set by Russia's 1998 default of approximately USD 40bn",
+      "Haircut of USD 72.5bn (50%); this matched the scale of Mexico's 1994 restructuring",
+      "Haircut of USD 130bn (90%); most creditors received near-zero recovery"
+    ],
+    correct: 1,
+    explanation: "At 30 cents on the dollar, creditors received ~USD 43.5bn on USD 145bn face value — implying a haircut of ~USD 101.5bn, or approximately 70%. This was indeed the largest sovereign default in history at the time, dwarfing Russia's 1998 default. It remained the largest until Greece's 2012 restructuring (~€107bn) superseded it. The scale of the haircut reflects not just Argentina's fiscal position but also its negotiating posture — the Kirchner government pursued a hard line with creditors, ultimately achieving a settlement but at the cost of prolonged exclusion from international capital markets."
+  },
+
+  // ── Q9  correct: C ── Section 04 · Argentina ────────────────────────────
+  {
+    section: "Section 04 · Argentina 2001–02", difficulty: "hard",
+    q: "The Corralito (November 2001) froze Argentine bank deposits. This policy was designed to prevent a complete banking system collapse. What was the fundamental tension it revealed, and why did it fail to prevent the eventual crisis?",
+    options: [
+      "It revealed that the IMF had secretly withdrawn support; once this became public, depositors panicked regardless",
+      "It revealed that the government lacked sufficient dollar reserves to back peso deposits at the 1:1 rate. By confirming depositor fears rather than resolving them, it accelerated political collapse and ultimately brought forward the default it was designed to prevent",
+      "It revealed a conflict between bank and sovereign creditors that the corralito successfully resolved through asset freezes",
+      "It was technically effective but politically unpopular; Argentina could have survived with the corralito in place indefinitely if not for external pressure"
+    ],
+    correct: 1,
+    explanation: "The corralito was a measure of last resort that confirmed precisely the fears it was meant to allay. By restricting withdrawals, the government signalled that the banking system did not have sufficient dollar reserves to honour its obligations — i.e., the 1:1 peg was unsustainable. Rather than restoring confidence, it triggered the political crisis: violent protests, the resignation of Economy Minister Cavallo, President de la Rúa's resignation, and five presidents in two weeks. The fiscal and currency crisis that followed (default December 2001, devaluation January 2002) was in many ways already predetermined once the corralito was imposed."
+  },
+
+  // ── Q10  correct: D ── Section 05 · China ───────────────────────────────
+  {
+    section: "Section 05 · China — The Non-Crisis", difficulty: "medium",
+    q: "China maintained GDP growth above 7% throughout the 1997–98 Asian crisis while its neighbours suffered contractions of 6–13%. Which combination of factors most directly explains China's insulation?",
+    options: [
+      "China had a current account deficit that provided automatic stabilisation, and its banks held no foreign currency assets",
+      "China's large state-owned enterprise sector meant it could direct fiscal stimulus quickly and effectively",
+      "China had already completed financial liberalisation and its banks were well-capitalised by international standards",
+      "The renminbi was not freely convertible for capital account transactions, and China maintained strict controls on cross-border portfolio flows — preventing the speculative attack and sudden-stop dynamics that devastated Korea and Thailand"
+    ],
+    correct: 3,
+    explanation: "The two protective factors were structural, not cyclical. First, the renminbi was pegged to the dollar but non-convertible for capital account purposes — foreign investors simply could not sell renminbi to bet against it. Second, capital controls meant that foreign lenders could not extend and then suddenly withdraw short-term credit from Chinese institutions — the 'sudden stop' mechanism was simply not available. These features insulated China from both the currency attack channel and the wholesale funding collapse channel that devastated the rest of the region. The lesson was not lost on Beijing: capital account liberalisation was quietly shelved for over a decade."
+  },
+
+  // ── Q11  correct: D ── Section 06 · Iceland ─────────────────────────────
+  {
+    section: "Section 06 · Iceland 2008", difficulty: "hard",
+    q: "Iceland's three major banks (Kaupthing, Landsbanki, Glitnir) had combined assets of approximately €85bn against a GDP of €14bn — about 600% of GDP — when they failed in October 2008. Why does this illustrate the same 'too big to bail' problem discussed in the context of the Eurozone in Week 8?",
+    options: [
+      "Iceland was a eurozone member and could not use the ECB as a lender of last resort",
+      "The Icelandic banks had borrowed exclusively from British and Dutch depositors, making the liability structure a diplomatic rather than financial problem",
+      "Iceland's government lacked the legal authority to nationalise banks under EU competition law",
+      "Bank liabilities at 600%+ of GDP meant that any government guarantee would immediately render Iceland itself insolvent — the sovereign simply could not backstop the financial sector, just as small eurozone sovereigns could not backstop their own oversized banks"
+    ],
+    correct: 3,
+    explanation: "The 'too big to bail' problem from Week 8 (Eurozone section) applies directly: when a country's banking sector has liabilities several multiples of GDP, a government guarantee or recapitalisation destroys the sovereign's own creditworthiness. Iceland's government tried briefly to offer guarantees but quickly abandoned them — the numbers were simply impossible. The resolution instead involved letting the banks fail, creating new domestic banks from their domestic assets and liabilities, and leaving foreign creditors (including UK and Dutch Icesave depositors) exposed. This parallels the Solara scenario in the summative assessment: sovereign capacity to backstop finance is fundamentally limited by the relative size of the banking sector."
+  },
+
+  // ── Q12  correct: C ── Section 06 · Iceland ─────────────────────────────
+  {
+    section: "Section 06 · Iceland 2008", difficulty: "medium",
+    q: "Iceland's post-crisis recovery was faster than that of Ireland or Greece, despite a deeper initial contraction. Which combination of factors most plausibly explains this divergence?",
+    options: [
+      "Iceland received a larger IMF bailout package than Ireland and had a pre-existing sovereign wealth fund",
+      "Iceland benefited from EU structural funds that Ireland and Greece did not receive until later",
+      "Iceland devalued the króna sharply (restoring competitiveness via the exchange rate), imposed capital controls (preventing further outflows), and let private bank creditors absorb losses rather than taxpayers — avoiding the debt-deflation trap that prolonged adjustment in eurozone periphery countries",
+      "Iceland's labour market was more flexible than Ireland's, allowing faster wage adjustment without currency depreciation"
+    ],
+    correct: 2,
+    explanation: "Three factors combined. First, the sharp króna depreciation — unlike Ireland and Greece, which were locked in the euro — allowed Iceland to restore export competitiveness quickly (tourism boomed on cheap króna). Second, capital controls stopped the balance of payments haemorrhage. Third, and most controversially, Iceland let its private banks fail rather than guaranteeing their foreign creditors — avoiding the Irish mistake of transferring banking losses onto the sovereign balance sheet. Ireland's blanket bank guarantee (2008) transferred €64bn of banking losses to taxpayers and required an IMF/EU bailout; Iceland's refusal to do the same is why its public debt trajectory was more sustainable despite a sharper initial shock."
+  },
+
+  // ── Q13  correct: C ── Section 07 · Prevention ──────────────────────────
+  {
+    section: "Section 07 · Prevention & Policy", difficulty: "hard",
+    q: "Mishkin argues that financial liberalisation should be 'sequenced' — that capital account opening should come last. What is the specific risk if capital account liberalisation precedes the development of sound domestic financial institutions?",
+    options: [
+      "Early capital account opening causes currency appreciation, which reduces export competitiveness and growth",
+      "Foreign capital inflows crowd out domestic savings, reducing the funds available for domestic investment",
+      "Without robust domestic supervision and well-capitalised banks, capital inflows fuel credit booms that are intermediated by fragile institutions. When sentiment reverses — as it inevitably does — the sudden withdrawal of foreign capital produces exactly the banking and currency crisis the liberalisation was meant to avoid",
+      "Capital account liberalisation requires abandoning the fixed exchange rate, which eliminates the nominal anchor for inflation expectations"
+    ],
+    correct: 2,
+    explanation: "Premature capital account opening is dangerous precisely because it supercharges a fragile domestic financial system with foreign capital it cannot safely intermediate. Without strong supervision, adequate capital requirements, and limits on currency mismatch, the capital inflow produces a lending boom — exactly Path A in Mishkin's Stage 1. When the boom reverses, the sudden withdrawal of foreign funding triggers the sudden-stop dynamic, the banking crisis, and the currency collapse. South Korea is the textbook example: capital account liberalisation in 1993–96 flooded Korean banks with short-term foreign funding that fuelled chaebol leverage — but the institutional infrastructure to manage those flows safely was not in place. The sequencing lesson: institution-building must precede liberalisation, not follow it."
+  }
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+function init() {
+  buildNav(); renderQuestion(0); updateHeader();
+}
+
+function buildNav() {
+  const grid = document.getElementById('navGrid');
+  grid.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn'; btn.id = `nav-${i}`; btn.textContent = i + 1;
+    btn.onclick = () => goTo(i);
+    grid.appendChild(btn);
+  });
+}
+
+function updateNav() {
+  QUESTIONS.forEach((_, i) => {
+    const btn = document.getElementById(`nav-${i}`);
+    btn.className = 'nav-btn';
+    if (i === current) btn.classList.add('active');
+    if (answers[i] !== null)
+      btn.classList.add(answers[i].correct ? 'answered-correct' : 'answered-wrong');
+  });
+}
+
+function updateHeader() {
+  const answered = answers.filter(a => a !== null).length;
+  const correct  = answers.filter(a => a && a.correct).length;
+  document.getElementById('scoreDisplay').textContent = `${correct} / ${answered}`;
+  document.getElementById('progressFill').style.width = (answered / QUESTIONS.length * 100) + '%';
+  document.getElementById('progressText').textContent = `${answered} of ${QUESTIONS.length} answered`;
+}
+
+function goTo(i) {
+  current = i;
+  document.getElementById('resultsPanel').classList.remove('show');
+  document.getElementById('questionCard').style.display = '';
+  renderQuestion(i); updateNav();
+}
+
+function renderQuestion(i) {
+  const q = QUESTIONS[i];
+  const answered = answers[i] !== null;
+  const L = ['A','B','C','D'];
+  const diffClass = { medium:'diff-medium', hard:'diff-hard', calc:'diff-calc' };
+  const diffLabel  = { medium:'Medium', hard:'Hard', calc:'∑ Calculation' };
+
+  const optionsHtml = q.options.map((opt, oi) => {
+    let cls = 'option-btn';
+    if (answered) {
+      cls += ' revealed';
+      if (oi === q.correct)            cls += ' correct';
+      else if (answers[i].chosen === oi) cls += ' wrong';
+      else                             cls += ' dimmed';
+    }
+    return `<button class="${cls}" onclick="choose(${i},${oi})" ${answered?'disabled':''}>
+      <span class="option-letter">${L[oi]}</span><span>${opt}</span>
+    </button>`;
+  }).join('');
+
+  const expHtml = answered
+    ? `<div class="explanation ${answers[i].correct?'correct-exp':'wrong-exp'} show">
+         <div class="exp-head">${answers[i].correct ? '✓ Correct' : '✗ Incorrect — Correct answer: '+L[q.correct]}</div>
+         ${q.explanation}
+       </div>`
+    : `<div class="explanation"></div>`;
+
+  const allAnswered = answers.every(a => a!==null);
+  const isLast = i === QUESTIONS.length - 1;
+
+  document.getElementById('questionCard').innerHTML = `
+    <div class="card-top">
+      <div class="q-meta">
+        <span class="q-number">Q${i+1} of ${QUESTIONS.length}</span>
+        <span class="q-section">${q.section}</span>
+      </div>
+      <span class="q-difficulty ${diffClass[q.difficulty]}">${diffLabel[q.difficulty]}</span>
+    </div>
+    <div class="card-body">
+      <div class="q-text">${q.q}</div>
+      <div class="options">${optionsHtml}</div>
+    </div>
+    ${expHtml}
+    <div class="card-footer">
+      <div class="nav-arrows">
+        <button class="btn-arrow" onclick="goTo(${i-1})" ${i===0?'disabled':''}>&#8592;</button>
+        <button class="btn-arrow" onclick="goTo(${i+1})" ${i===QUESTIONS.length-1?'disabled':''}>&#8594;</button>
+      </div>
+      ${allAnswered && isLast
+        ? `<button class="btn btn-primary" onclick="showResults()">View Results &rarr;</button>`
+        : answered
+          ? `<button class="btn btn-secondary" onclick="goTo(${Math.min(i+1,QUESTIONS.length-1)})">Next question &rarr;</button>`
+          : `<button class="btn btn-secondary" disabled>Select an answer</button>`
+      }
+    </div>`;
+}
+
+function choose(qi, oi) {
+  if (answers[qi] !== null) return;
+  answers[qi] = { chosen: oi, correct: oi === QUESTIONS[qi].correct };
+  updateHeader(); updateNav(); renderQuestion(qi);
+}
+
+function showResults() {
+  document.getElementById('questionCard').style.display = 'none';
+  const panel = document.getElementById('resultsPanel');
+  panel.classList.add('show');
+
+  const correct = answers.filter(a => a && a.correct).length;
+  const total   = QUESTIONS.length;
+  const pct     = Math.round(correct / total * 100);
+
+  const sections = {};
+  QUESTIONS.forEach((q, i) => {
+    const s = q.section.split('·')[0].trim();
+    if (!sections[s]) sections[s] = { correct:0, total:0 };
+    sections[s].total++;
+    if (answers[i] && answers[i].correct) sections[s].correct++;
+  });
+
+  const grade = pct>=80 ? 'Excellent — strong command of the material.'
+              : pct>=60 ? 'Good — review the slides on questions you missed.'
+              : pct>=40 ? 'Developing — revisit the relevant lecture sections.'
+              :           'Keep working — focus on the core concepts from each section.';
+
+  panel.innerHTML = `
+    <div class="results-header">
+      <div class="results-title">Quiz Complete</div>
+      <div class="results-subtitle">Money, Credit &amp; Banking · Week 8b</div>
+      <div class="big-score">${correct}/${total}</div>
+      <div style="color:var(--gold-lt);font-size:15px;margin-bottom:4px;">${pct}% — ${grade}</div>
+    </div>
+    <div class="results-body">
+      <div style="font-size:13px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">By Section</div>
+      <div class="section-breakdown">
+        ${Object.entries(sections).map(([s,d]) =>
+          `<div class="breakdown-item">
+            <div class="breakdown-section">${s}</div>
+            <div class="breakdown-score">${d.correct} / ${d.total}</div>
+          </div>`).join('')}
+      </div>
+      <button class="btn-restart" onclick="restart()">&#8635; Retake Quiz</button>
+    </div>`;
+}
+
+function restart() {
+  answers = new Array(QUESTIONS.length).fill(null);
+  document.getElementById('resultsPanel').classList.remove('show');
+  document.getElementById('questionCard').style.display = '';
+  current = 0;
+  buildNav(); updateNav(); updateHeader(); renderQuestion(0);
+}
+
+init();
+</script>
+</body>
+</html>
